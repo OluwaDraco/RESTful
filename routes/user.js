@@ -1,14 +1,14 @@
 const express = require("express");
-const User = require("./models/User");
+const {User} = require("../models");
 const router = express.Router();
 
-function asyncHandler (cb){
-    return async(req,res,next)=>{
+function asyncHandler(cb){
+    return async (req,res,next) =>{
         try{
             await cb(req,res,next)
         }
-        catch(error){
-            res.status(500).send(error);
+        catch(err){
+            next(err);
         }
     }
 }
@@ -25,8 +25,8 @@ router.post('/users', asyncHandler(async(req,res)=>{
             'location':"/"
         })
 
-    }catch(error){
-        console.log("Error:",error)
+    }catch(err){
+        console.log("Error:",err)
     }
 }))
 
