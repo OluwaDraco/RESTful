@@ -1,5 +1,5 @@
 const express = require("express");
-const {Course} = require("../models")
+const {User,Course} = require("../models");
 const router = express.Router();
 
 function asyncHandler(cb){
@@ -12,7 +12,34 @@ function asyncHandler(cb){
         }
     }
 }
-//return all courses
+
+router.get('/users', asyncHandler(async(req,res)=>{
+    const user = req.currentUser;
+    res.status(201).json(user)
+}));
+
+router.post('/users', asyncHandler(async(req,res)=>{
+    try{
+        await User.create(req.body);
+        
+        res.location('/');
+        res.status(201).end();
+
+    }catch(error){
+        console.log("Error:",error.name)
+    
+
+    if(error.name === "SequelizeUniqueConstraintError" || error.name === "SequelizeValidationError"){
+        const errors = error.errors.map(err => err.message);
+        res.status(400).json({errors});
+    }
+    else{
+        throw error
+    }
+}
+}))
+//-------------COURSES------------//
+
 router.get('/courses', asyncHandler(async(req,res)=>{
     const courses = await Course.findAll();
     res.status(200).json(courses);
@@ -23,12 +50,16 @@ router.get('/courses/:id', asyncHandler(async(req,res)=>{
     res.status(200).json(course);
 }))
 
-router.post('/courses/:id',asyncHandler(async(req,res)=>{
+router.post('/courses',asyncHandler(async(req,res)=>{
     try{
         await Course.create(req.body)
-    }catch(err){
+        res.status(201).location(`/courses/${Course.id}`).end();
+    }
+    catch(error){
         console.log("Error:",err)
     }
+
+    
 }))
 
 router.put('/courses/:id',asyncHandler(async(req,res)=>{
@@ -40,5 +71,4 @@ router.put('/courses/:id',asyncHandler(async(req,res)=>{
         console.log("Error:",err)
     }
 }))
-
-module.exports = router
+module.exports = router;

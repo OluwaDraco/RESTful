@@ -6,20 +6,47 @@ module.exports = (sequelize) =>{
         firstName:{
             type:DataTypes.STRING,
             allowNull: false,
+            validate:{
+                msg: ' Please provide a First Name '
+            }
         },
         lastName:{
             type:DataTypes.STRING,
             allowNull: false,
+            validate:{
+                notNull:{
+                msg: 'Please provide a Last Name '
+            },
+            notEmpty:{
+                msg:"Enter a last name"
+            }
+        }
         },
         emailAddress:{
             type:DataTypes.STRING,
             allowNull: false,
+            validate:{
+                notNull:{
+                msg:' An Email is required'
+            },
+                isEmail:{
+                    msg: 'Please enter a valid Email'
+                }
+            }
         },
         password:{
             type:DataTypes.STRING,
             allowNull: false,
+            validate:{
+                notNull:{
+                msg:'A Password required'
+                },
+                notEmpty:{
+                        msg: 'Please enter a Password '
+                }
+            }
         }
-    },{sequelize});
+},{sequelize});
 
     User.associate = (model) =>{
         User.hasMany(model.Course,{
