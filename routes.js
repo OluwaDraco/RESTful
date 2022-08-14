@@ -43,6 +43,7 @@ router.get(
     "/courses",
     asyncHandle(async (req, res) => {
         const courses = await Course.findAll({
+            attributes:['description','title'],
             include: [
                 {
                     model: User,
@@ -57,6 +58,7 @@ router.get(
     "/courses/:id",
     asyncHandle(async (req, res) => {
         const course = await Course.findByPk(req.params.id, {
+            attributes:['description','title'],
             include: [
                 {
                     model: User,
@@ -99,7 +101,7 @@ router.put(
                     await course.update(course);
                     res.status(204).end();
                 } else {
-                    res.status(401).json({
+                    res.status(403).json({
                         error: { message: "Sorry, You don't have permission to do this " },
                     });
                 }
@@ -131,7 +133,7 @@ router.delete("/courses/:id",authenticateUser,asyncHandle(async(req,res)=>{
                 res.status(204).end();
             }
             else{
-                res.status(400).json({message:"Sorry, You don't have permission to do this "})
+                res.status(403).json({message:"Sorry, You don't have permission to do this "})
             }
         }
         else{
