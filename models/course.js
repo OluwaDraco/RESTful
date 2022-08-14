@@ -27,11 +27,9 @@ module.exports = (sequelize) =>{
     },
     estimatedTime:{
         type:Sequelize.STRING,
-        allowNull:false
     },
     materialsNeeded:{
         type:Sequelize.STRING,
-        allowNull:false,
     },
     
     },{sequelize});
@@ -42,11 +40,9 @@ module.exports = (sequelize) =>{
                 fieldName: "userId",
                 allowNull: false,
             }
-        })
-    }
+        });
+    };
 
 
 return Course;
 };
-
-    

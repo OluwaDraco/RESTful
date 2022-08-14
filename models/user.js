@@ -7,7 +7,12 @@ module.exports = (sequelize) =>{
             type:DataTypes.STRING,
             allowNull: false,
             validate:{
-                msg: ' Please provide a First Name '
+                notNull:{
+                    msg:"need firstname"
+                },
+                notEmpty:{
+                    msg:"required"
+                }
             }
         },
         lastName:{
