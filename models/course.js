@@ -8,10 +8,10 @@ module.exports = (sequelize) =>{
         allowNull:false,
         validate:{
             notNull:{
-            msg:' Please provide a "title" ',},
+            msg:' Please provide a Title '},
             notEmpty:{
-                msg:"provide a title "
-            }
+                msg:" Title can not be empty  "
+            },
         }
     },
     description:{
@@ -19,9 +19,9 @@ module.exports = (sequelize) =>{
         allowNull:false,
         validate:{
             notNull:{
-            msg:' Please provide a "Description" ',},
+            msg:' Description can not be Null '},
             notEmpty:{
-                msg:"provide a description "
+                msg:"you cant  submit a empty description "
             }
         }
     },

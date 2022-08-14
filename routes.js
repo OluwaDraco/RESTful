@@ -89,7 +89,7 @@ router.post(
 );
 
 router.put(
-    "/courses/:id",
+    "/courses/:id",authenticateUser,
     asyncHandle(async (req, res) => {
         let course = await Course.findByPk(req.params.id);
         let user = req.currentUser;
@@ -100,11 +100,11 @@ router.put(
                     res.status(204).end();
                 } else {
                     res.status(401).json({
-                        error: { message: "something happend" },
+                        error: { message: "Sorry, You don't have permission to do this " },
                     });
                 }
             } else {
-                console.log("you cant update!");
+                console.log("Course not found!");
             }
         } catch (error) {
             console.log("Error:", error);
@@ -120,4 +120,35 @@ router.put(
         }
     })
 );
+
+router.delete("/courses/:id",authenticateUser,asyncHandle(async(req,res)=>{
+    const course = await Course.findByPk(req.params.id);
+    let user = req.currentUser;
+    try{
+        if(course){
+            if(course.userId === user.id){
+                await course.destroy(course);
+                res.status(204).end();
+            }
+            else{
+                res.status(400).json({message:"Sorry, You don't have permission to do this "})
+            }
+        }
+        else{
+            res.status(400).json({message:"could not find course"})
+        }
+    }
+    catch(error){
+        console.log("Error:", error);
+            if (
+                error.name === "SequelizeValidationError" ||
+                error.name === "SequelizeUniqueConstraintError"
+            ) {
+                const errors = error.errors.map((err) => err.message);
+                res.status(400).json({ errors });
+            } else {
+                throw error;
+            }
+    }
+}))
 module.exports = router;
