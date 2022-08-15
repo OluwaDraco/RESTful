@@ -12,6 +12,7 @@ router.get('/users', authenticateUser, asyncHandle(async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         emailAddress: user.emailAddress,
+        userId: user.id,
         });
     }));
 
@@ -42,7 +43,7 @@ router.get(
     "/courses",
     asyncHandle(async (req, res) => {
         const courses = await Course.findAll({
-            attributes:['description','title'],
+            attributes:['description','title','userId','materialsNeeded','estimatedTime'],
             include: [
                 {
                     model: User,
@@ -57,7 +58,7 @@ router.get(
     "/courses/:id",
     asyncHandle(async (req, res) => {
         const course = await Course.findByPk(req.params.id, {
-            attributes:['description','title'],
+            attributes:['description','title','userId','materialsNeeded','estimatedTime'],
             include: [
                 {
                     model: User,
@@ -82,7 +83,7 @@ router.post(
                 error.name === "SequelizeUniqueConstraintError"
             ) {
                 const errors = error.errors.map((err) => err.message);
-                res.status(400).json({ errors });
+                res.status(401).json({ errors });
             } else {
                 throw error;
             }
@@ -115,7 +116,7 @@ router.put(
                 error.name === "SequelizeUniqueConstraintError"
             ) {
                 const errors = error.errors.map((err) => err.message);
-                res.status(400).json({ errors });
+                res.status(401).json({ errors });
             } else {
                 throw error;
             }
