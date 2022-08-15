@@ -47,6 +47,8 @@ router.get(
             include: [
                 {
                     model: User,
+                    attributes:{exclude:['createdAt','updatedAt','password']}
+
                 },
             ],
         });
@@ -62,6 +64,7 @@ router.get(
             include: [
                 {
                     model: User,
+                    attributes:{exclude:['createdAt','updatedAt','password']}
                 },
             ],
         });
