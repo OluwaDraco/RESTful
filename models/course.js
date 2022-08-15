@@ -12,6 +12,7 @@ module.exports = (sequelize) =>{
             notEmpty:{
                 msg:" Title can not be empty  "
             },
+            
         }
     },
     description:{

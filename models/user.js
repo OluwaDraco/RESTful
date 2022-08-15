@@ -33,13 +33,16 @@ module.exports = (sequelize) =>{
         emailAddress:{
             type:DataTypes.STRING,
             allowNull: false,
+            unique:{
+                msg: "this email is already in use"
+            },
             validate:{
                 notNull:{
                 msg:' An Email is required'
             },
                 isEmail:{
                     msg: 'Please enter a valid Email'
-                }
+                },
             }
         },
         password:{
@@ -54,12 +57,11 @@ module.exports = (sequelize) =>{
                 }
             },
             set(val) {
-                if(val == this.password){
                     const hashedPassword = bcrypt.hashSync(val,10);
                     this.setDataValue('password',hashedPassword);
                 }
             }
-        }
+        
 },{sequelize});
 
     User.associate = (model) =>{

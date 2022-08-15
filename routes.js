@@ -19,7 +19,6 @@ router.post(
     "/users",
     asyncHandle(async (req, res) => {
         try {
-            console.log(req.body);
             await User.create(req.body);
             res.status(201).location("/").end();
         } catch (error) {
@@ -74,7 +73,8 @@ router.post(
     asyncHandle(async (req, res) => {
         try {
             await Course.create(req.body);
-            res.status(201).location(`/courses/${Course.id}`).end();
+            console.log(req.body)
+            res.status(201).location(`/courses/${req.body.userId}`).end();
         } catch (error) {
             console.log("Error:", error);
             if (
@@ -98,7 +98,7 @@ router.put(
         try {
             if (course) {
                 if (course.userId === user.id) {
-                    await course.update(course);
+                    await course.update(req.body);
                     res.status(204).end();
                 } else {
                     res.status(403).json({
@@ -106,8 +106,8 @@ router.put(
                     });
                 }
             } else {
-                console.log("Course not found!");
-            }
+                console.log("Course not found!")
+                        }
         } catch (error) {
             console.log("Error:", error);
             if (
