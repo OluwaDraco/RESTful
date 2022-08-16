@@ -1,20 +1,23 @@
 const express = require("express");
 const { User, Course } = require("./models");
-const {authenticateUser} = require("./middleware/user-auth")
-const {asyncHandle} = require("./middleware/async-Handler")
+const { authenticateUser } = require("./middleware/user-auth");
+const { asyncHandle } = require("./middleware/async-Handler");
 
 const router = express.Router();
 
-
-router.get('/users', authenticateUser, asyncHandle(async (req, res) => {
+router.get(
+    "/users",
+    authenticateUser,
+    asyncHandle(async (req, res) => {
         const user = req.currentUser;
         res.status(200).json({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        emailAddress: user.emailAddress,
-        userId: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            emailAddress: user.emailAddress,
+            userId: user.id,
         });
-    }));
+    })
+);
 
 router.post(
     "/users",
@@ -31,24 +34,31 @@ router.post(
             ) {
                 const errors = error.errors.map((err) => err.message);
                 res.status(400).json({ errors });
-            } 
-            else {
+            } else {
                 throw error;
             }
         }
-    }));
+    })
+);
 //-------------COURSES------------//
 
 router.get(
     "/courses",
     asyncHandle(async (req, res) => {
         const courses = await Course.findAll({
-            attributes:['description','title','userId','materialsNeeded','estimatedTime'],
+            attributes: [
+                "description",
+                "title",
+                "userId",
+                "materialsNeeded",
+                "estimatedTime",
+            ],
             include: [
                 {
                     model: User,
-                    attributes:{exclude:['createdAt','updatedAt','password']}
-
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt", "password"],
+                    },
                 },
             ],
         });
@@ -60,11 +70,19 @@ router.get(
     "/courses/:id",
     asyncHandle(async (req, res) => {
         const course = await Course.findByPk(req.params.id, {
-            attributes:['description','title','userId','materialsNeeded','estimatedTime'],
+            attributes: [
+                "description",
+                "title",
+                "userId",
+                "materialsNeeded",
+                "estimatedTime",
+            ],
             include: [
                 {
                     model: User,
-                    attributes:{exclude:['createdAt','updatedAt','password']}
+                    attributes: {
+                        exclude: ["createdAt", "updatedAt", "password"],
+                    },
                 },
             ],
         });
@@ -77,7 +95,7 @@ router.post(
     asyncHandle(async (req, res) => {
         try {
             await Course.create(req.body);
-            console.log(req.body)
+            console.log(req.body);
             res.status(201).location(`/courses/${req.body.userId}`).end();
         } catch (error) {
             console.log("Error:", error);
@@ -95,7 +113,8 @@ router.post(
 );
 
 router.put(
-    "/courses/:id",authenticateUser,
+    "/courses/:id",
+    authenticateUser,
     asyncHandle(async (req, res) => {
         let course = await Course.findByPk(req.params.id);
         let user = req.currentUser;
@@ -106,12 +125,15 @@ router.put(
                     res.status(204).end();
                 } else {
                     res.status(403).json({
-                        error: { message: "Sorry, You don't have permission to do this " },
+                        error: {
+                            message:
+                                "Sorry, You don't have permission to do this ",
+                        },
                     });
                 }
             } else {
-                console.log("Course not found!")
-                        }
+                res.status(404).json({message:"course not found"});
+            }
         } catch (error) {
             console.log("Error:", error);
             if (
@@ -127,25 +149,27 @@ router.put(
     })
 );
 
-router.delete("/courses/:id",authenticateUser,asyncHandle(async(req,res)=>{
-    const course = await Course.findByPk(req.params.id);
-    let user = req.currentUser;
-    try{
-        if(course){
-            if(course.userId === user.id){
-                await course.destroy(course);
-                res.status(204).end();
+router.delete(
+    "/courses/:id",
+    authenticateUser,
+    asyncHandle(async (req, res) => {
+        const course = await Course.findByPk(req.params.id);
+        let user = req.currentUser;
+        try {
+            if (course) {
+                if (course.userId === user.id) {
+                    await course.destroy(course);
+                    res.status(204).end();
+                } else {
+                    res.status(403).json({
+                        message: "Sorry, You don't have permission to do this ",
+                    });
+                }
+            } else {
+                res.status(400).json({ message: "could not find course" });
             }
-            else{
-                res.status(403).json({message:"Sorry, You don't have permission to do this "})
-            }
-        }
-        else{
-            res.status(400).json({message:"could not find course"})
-        }
-    }
-    catch(error){
-        console.log("Error:", error);
+        } catch (error) {
+            console.log("Error:", error);
             if (
                 error.name === "SequelizeValidationError" ||
                 error.name === "SequelizeUniqueConstraintError"
@@ -155,6 +179,7 @@ router.delete("/courses/:id",authenticateUser,asyncHandle(async(req,res)=>{
             } else {
                 throw error;
             }
-    }
-}))
+        }
+    })
+);
 module.exports = router;
