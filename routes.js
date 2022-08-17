@@ -104,7 +104,7 @@ router.post(
                 error.name === "SequelizeUniqueConstraintError"
             ) {
                 const errors = error.errors.map((err) => err.message);
-                res.status(401).json({ errors });
+                res.status(400).json({ errors });
             } else {
                 throw error;
             }
@@ -141,7 +141,7 @@ router.put(
                 error.name === "SequelizeUniqueConstraintError"
             ) {
                 const errors = error.errors.map((err) => err.message);
-                res.status(401).json({ errors });
+                res.status(400).json({ errors });
             } else {
                 throw error;
             }
